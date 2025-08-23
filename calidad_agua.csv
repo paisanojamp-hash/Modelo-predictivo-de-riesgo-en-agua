@@ -1,0 +1,4 @@
+pH,Conductividad (µS/cm),Turbidez (NTU),Oxígeno disuelto (mg/L),Temperatura (°C),E. coli (UFC/100mL),Coliformes fecales (UFC/100mL),Coliformes totales (UFC/100mL),NO3 (mg/L),NO2 (mg/L),NH4 (mg/L),PO4 (mg/L),Riesgo
+7.2,500,3.5,6.8,28,10,25,50,1.5,0.05,0.2,0.1,Bajo
+6.8,800,15.0,5.2,30,300,250,1000,2.3,0.1,0.3,1.2,Medio
+5.5,1200,20.0,4.0,32,5000,2000,4000,5.0,0.5,1.0,2.5,Alto
