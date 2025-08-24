@@ -99,8 +99,18 @@ def recomendar(valor, tipo):
         else:
             color, texto = color_recomendacion("Alto")
             return f"E. coli: {texto}. Contaminación fecal activa.", color
-
-    # Aquí puedes agregar los demás parámetros como coliformes, nitratos, etc., siguiendo el mismo patrón.
+    
+    # Añadimos la recomendación de Fosfatos (PO4)
+    elif tipo == "Fosfatos":
+        if valor < 0.1:
+            color, texto = color_recomendacion("Bajo")
+            return f"Fosfatos (PO4): {texto}. Menor a 0.1 mg/L, límites que minimizan riesgo de eutrofización.", color
+        elif 0.1 <= valor <= 0.3:
+            color, texto = color_recomendacion("Medio")
+            return f"Fosfatos (PO4): {texto}. Entre 0.1 y 0.3 mg/L, señales de alerta para proliferación algal.", color
+        else:
+            color, texto = color_recomendacion("Alto")
+            return f"Fosfatos (PO4): {texto}. Mayor a 0.3 mg/L, riesgo alto de eutrofización, floración de algas nocivas y deterioro ambiental.", color
 
 # Clasificar riesgo (sin mostrar riesgo general)
 if st.button("Clasificar Riesgo"):
@@ -138,6 +148,9 @@ if st.button("Clasificar Riesgo"):
     recomendacion, color_Ecoli = recomendar(ecoli, "E. coli")
     st.markdown(f"<p style='color:{color_Ecoli};'>{recomendacion}</p>", unsafe_allow_html=True)
 
+    recomendacion, color_Fosfatos = recomendar(po4, "Fosfatos")
+    st.markdown(f"<p style='color:{color_Fosfatos};'>{recomendacion}</p>", unsafe_allow_html=True)
+
     # Gráfica de los parámetros ingresados
     fig, ax = plt.subplots()
     valores = [pH, conductividad, turbidez, oxigeno, temperatura, ecoli,
@@ -147,7 +160,7 @@ if st.button("Clasificar Riesgo"):
 
     # Asignar colores a las barras según los valores
     colores = [color_pH, color_Conductividad, color_Turbidez, color_Oxigeno,
-               color_Temperatura, color_Ecoli, "orange", "orange", "green", "yellow", "red", "blue"]
+               color_Temperatura, color_Ecoli, color_Fosfatos, "orange", "green", "yellow", "red", "blue"]
 
     ax.bar(etiquetas, valores, color=colores)
     ax.set_ylabel("Valores ingresados")
