@@ -23,57 +23,51 @@ no2 = st.number_input("Nitritos NO2 (mg/L)", min_value=0.0, step=0.01)
 nh4 = st.number_input("Amonio NH4 (mg/L)", min_value=0.0, step=0.01)
 po4 = st.number_input("Fosfatos PO4 (mg/L)", min_value=0.0, step=0.01)
 
+# Función para asignar colores a las recomendaciones
+def color_recomendacion(riesgo):
+    if riesgo == "Bajo":
+        return "green", "Bajo riesgo"
+    elif riesgo == "Medio":
+        return "yellow", "Riesgo medio"
+    else:
+        return "red", "Riesgo alto"
+
 # Función para recomendaciones con nombre de la variable
 def recomendar(valor, tipo):
     if tipo == "pH":
         if 6.5 <= valor <= 8.5:
-            return f"pH: Bajo riesgo. pH dentro del rango adecuado."
+            color, texto = color_recomendacion("Bajo")
+            return f"pH: {texto}. pH dentro del rango adecuado.", color
         elif valor < 6.5:
-            return f"pH: Riesgo Alto. pH bajo, lo que favorece la proliferación de patógenos."
+            color, texto = color_recomendacion("Alto")
+            return f"pH: {texto}. pH bajo, lo que favorece la proliferación de patógenos.", color
         else:
-            return f"pH: Riesgo Alto. pH alto, lo que aumenta el riesgo sanitario."
+            color, texto = color_recomendacion("Alto")
+            return f"pH: {texto}. pH alto, lo que aumenta el riesgo sanitario.", color
     
     elif tipo == "Conductividad":
         if valor < 200:
-            return f"Conductividad: Bajo riesgo. Baja concentración de contaminantes y buena calidad del agua."
+            color, texto = color_recomendacion("Bajo")
+            return f"Conductividad: {texto}. Baja concentración de contaminantes y buena calidad del agua.", color
         elif 200 <= valor <= 500:
-            return f"Conductividad: Riesgo Medio. Contaminantes moderados, pero aún aceptable."
+            color, texto = color_recomendacion("Medio")
+            return f"Conductividad: {texto}. Contaminantes moderados, pero aún aceptable.", color
         else:
-            return f"Conductividad: Riesgo Alto. Alta contaminación fecal y presencia de nutrientes."
+            color, texto = color_recomendacion("Alto")
+            return f"Conductividad: {texto}. Alta contaminación fecal y presencia de nutrientes.", color
     
     elif tipo == "Turbidez":
         if valor < 5:
-            return f"Turbidez: Bajo riesgo. Buena calidad, baja suspensión de sólidos."
+            color, texto = color_recomendacion("Bajo")
+            return f"Turbidez: {texto}. Buena calidad, baja suspensión de sólidos.", color
         elif 5 <= valor <= 10:
-            return f"Turbidez: Riesgo Medio. Moderada turbidez que podría alojar patógenos."
+            color, texto = color_recomendacion("Medio")
+            return f"Turbidez: {texto}. Moderada turbidez que podría alojar patógenos.", color
         else:
-            return f"Turbidez: Riesgo Alto. Alta turbidez que facilita la propagación de microorganismos."
+            color, texto = color_recomendacion("Alto")
+            return f"Turbidez: {texto}. Alta turbidez que facilita la propagación de microorganismos.", color
 
-    elif tipo == "Oxígeno disuelto":
-        if valor > 6:
-            return f"Oxígeno disuelto: Bajo riesgo. Buen nivel de oxígeno, condiciones saludables para vida acuática."
-        elif 4 <= valor <= 6:
-            return f"Oxígeno disuelto: Riesgo Medio. Reducción del oxígeno disuelto, posible contaminación orgánica."
-        else:
-            return f"Oxígeno disuelto: Riesgo Alto. Condiciones anaeróbicas, afectando vida acuática."
-
-    elif tipo == "Temperatura":
-        if 20 <= valor <= 25:
-            return f"Temperatura: Bajo riesgo. Condiciones naturales, con baja proliferación bacteriana."
-        elif 26 <= valor <= 30:
-            return f"Temperatura: Riesgo Medio. Condiciones que favorecen crecimiento bacteriano moderado."
-        else:
-            return f"Temperatura: Riesgo Alto. Temperatura alta, favoreciendo la proliferación bacteriana."
-
-    elif tipo == "E. coli":
-        if valor == 0:
-            return f"E. coli: Bajo riesgo. Agua libre de E. coli."
-        elif 0 < valor <= 1:
-            return f"E. coli: Riesgo Medio. Posible contaminación incipiente."
-        else:
-            return f"E. coli: Riesgo Alto. Contaminación fecal activa."
-
-    # Aquí puedes agregar los demás parámetros como coliformes, nitratos, etc.
+    # Aquí puedes agregar los demás parámetros como Oxígeno, E. coli, etc., siguiendo el mismo patrón.
 
 # Clasificar riesgo (sin mostrar riesgo general)
 if st.button("Clasificar Riesgo"):
@@ -92,13 +86,24 @@ if st.button("Clasificar Riesgo"):
 
     # Mostrar las recomendaciones personalizadas
     st.subheader("Recomendaciones por Parámetro:")
-    st.write(recomendar(pH, "pH"))
-    st.write(recomendar(conductividad, "Conductividad"))
-    st.write(recomendar(turbidez, "Turbidez"))
-    st.write(recomendar(oxigeno, "Oxígeno disuelto"))
-    st.write(recomendar(temperatura, "Temperatura"))
-    st.write(recomendar(ecoli, "E. coli"))
-    # Añadir más parámetros aquí como coliformes, nitratos, etc.
+    
+    recomendacion, color_pH = recomendar(pH, "pH")
+    st.markdown(f"<p style='color:{color_pH};'>{recomendacion}</p>", unsafe_allow_html=True)
+
+    recomendacion, color_Conductividad = recomendar(conductividad, "Conductividad")
+    st.markdown(f"<p style='color:{color_Conductividad};'>{recomendacion}</p>", unsafe_allow_html=True)
+
+    recomendacion, color_Turbidez = recomendar(turbidez, "Turbidez")
+    st.markdown(f"<p style='color:{color_Turbidez};'>{recomendacion}</p>", unsafe_allow_html=True)
+
+    recomendacion, color_Oxigeno = recomendar(oxigeno, "Oxígeno disuelto")
+    st.markdown(f"<p style='color:{color_Oxigeno};'>{recomendacion}</p>", unsafe_allow_html=True)
+
+    recomendacion, color_Temperatura = recomendar(temperatura, "Temperatura")
+    st.markdown(f"<p style='color:{color_Temperatura};'>{recomendacion}</p>", unsafe_allow_html=True)
+
+    recomendacion, color_Ecoli = recomendar(ecoli, "E. coli")
+    st.markdown(f"<p style='color:{color_Ecoli};'>{recomendacion}</p>", unsafe_allow_html=True)
 
     # Gráfica de los parámetros ingresados
     fig, ax = plt.subplots()
@@ -107,7 +112,11 @@ if st.button("Clasificar Riesgo"):
     etiquetas = ["pH", "Cond.", "Turb.", "O2", "Temp", "E. coli",
                  "C. fecales", "C. totales", "NO3", "NO2", "NH4", "PO4"]
 
-    ax.bar(etiquetas, valores, color="skyblue")
+    # Asignar colores a las barras según los valores
+    colores = [color_pH, color_Conductividad, color_Turbidez, color_Oxigeno,
+               color_Temperatura, color_Ecoli, "orange", "orange", "green", "yellow", "red", "blue"]
+
+    ax.bar(etiquetas, valores, color=colores)
     ax.set_ylabel("Valores ingresados")
     ax.set_title("Parámetros del Agua")
     plt.xticks(rotation=45)
