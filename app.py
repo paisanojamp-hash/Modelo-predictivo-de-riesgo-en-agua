@@ -25,6 +25,58 @@ no2 = st.number_input("Nitritos NO2 (mg/L)", min_value=0.0, step=0.01)
 nh4 = st.number_input("Amonio NH4 (mg/L)", min_value=0.0, step=0.01)
 po4 = st.number_input("Fosfatos PO4 (mg/L)", min_value=0.0, step=0.01)
 
+# --- Función para evaluar las variables y generar las recomendaciones ---
+def recomendar(valor, tipo):
+    if tipo == "pH":
+        if 6.5 <= valor <= 8.5:
+            return "Bajo riesgo: pH dentro del rango adecuado."
+        elif valor < 6.5:
+            return "Riesgo Alto: pH bajo, lo que favorece la proliferación de patógenos."
+        else:
+            return "Riesgo Alto: pH alto, lo que aumenta el riesgo sanitario."
+    
+    elif tipo == "Conductividad":
+        if valor < 200:
+            return "Bajo riesgo: Baja concentración de contaminantes y buena calidad del agua."
+        elif 200 <= valor <= 500:
+            return "Riesgo Medio: Contaminantes moderados, pero aún aceptable."
+        else:
+            return "Riesgo Alto: Alta contaminación fecal y presencia de nutrientes."
+    
+    elif tipo == "Turbidez":
+        if valor < 5:
+            return "Bajo riesgo: Buena calidad, baja suspensión de sólidos."
+        elif 5 <= valor <= 10:
+            return "Riesgo Medio: Moderada turbidez que podría alojar patógenos."
+        else:
+            return "Riesgo Alto: Alta turbidez que facilita la propagación de microorganismos."
+
+    elif tipo == "Oxígeno disuelto":
+        if valor > 6:
+            return "Bajo riesgo: Buen nivel de oxígeno, condiciones saludables para vida acuática."
+        elif 4 <= valor <= 6:
+            return "Riesgo Medio: Reducción del oxígeno disuelto, posible contaminación orgánica."
+        else:
+            return "Riesgo Alto: Condiciones anaeróbicas, afectando vida acuática."
+
+    elif tipo == "Temperatura":
+        if 20 <= valor <= 25:
+            return "Bajo riesgo: Condiciones naturales, con baja proliferación bacteriana."
+        elif 26 <= valor <= 30:
+            return "Riesgo Medio: Condiciones que favorecen crecimiento bacteriano moderado."
+        else:
+            return "Riesgo Alto: Temperatura alta, favoreciendo la proliferación bacteriana."
+
+    elif tipo == "E. coli":
+        if valor == 0:
+            return "Bajo riesgo: Agua libre de E. coli."
+        elif 0 < valor <= 1:
+            return "Riesgo Medio: Posible contaminación incipiente."
+        else:
+            return "Riesgo Alto: Contaminación fecal activa."
+
+    # Puedes hacer lo mismo para otros parámetros, como Coliformes fecales, Nitritos, etc.
+
 # --- Clasificación ---
 if st.button("Clasificar Riesgo"):
     # Crear dataframe con los datos ingresados
@@ -37,18 +89,29 @@ if st.button("Clasificar Riesgo"):
                                   "Coliformes totales (UFC/100mL)",
                                   "NO3 (mg/L)", "NO2 (mg/L)", "NH4 (mg/L)", "PO4 (mg/L)"])
 
-    # Predecir
+    # Predecir riesgo
     pred = modelo.predict(datos)[0]
 
     st.subheader(f"✅ Riesgo Clasificado: **{pred}**")
 
-    # Recomendaciones según el riesgo
+    # Recomendaciones generales según el riesgo
     if pred == "Alto":
         st.error("⚠️ El agua **NO es apta** para consumo. Se recomienda hervir, clorar o filtrar antes de usar.")
     elif pred == "Medio":
         st.warning("🟠 Riesgo **moderado**. Se recomienda tratamiento previo al consumo.")
     else:
         st.success("🟢 Agua en condiciones seguras para consumo.")
+
+    # --- Mostrar las recomendaciones personalizadas para cada parámetro ---
+    st.subheader("Recomendaciones por Parámetro:")
+    
+    st.write(recomendar(pH, "pH"))
+    st.write(recomendar(conductividad, "Conductividad"))
+    st.write(recomendar(turbidez, "Turbidez"))
+    st.write(recomendar(oxigeno, "Oxígeno disuelto"))
+    st.write(recomendar(temperatura, "Temperatura"))
+    st.write(recomendar(ecoli, "E. coli"))
+    # ... puedes continuar con otros parámetros como coliformes, nitratos, etc.
 
     # --- Gráfica de los parámetros ingresados ---
     fig, ax = plt.subplots()
