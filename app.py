@@ -100,7 +100,28 @@ def recomendar(valor, tipo):
             color, texto = color_recomendacion("Alto")
             return f"E. coli: {texto}. Contaminación fecal activa.", color
     
-    # Añadimos la recomendación de Fosfatos (PO4)
+    elif tipo == "Coliformes fecales":
+        if valor == 0:
+            color, texto = color_recomendacion("Bajo")
+            return f"Coliformes fecales: {texto}. Ausencia (0 UFC/100mL) o niveles insignificantes, garantizando seguridad sanitaria.", color
+        elif 0 < valor <= 1:
+            color, texto = color_recomendacion("Medio")
+            return f"Coliformes fecales: {texto}. Pequeñas cantidades (hasta 1 UFC/100mL) que requieren monitoreo y posibles medidas preventivas.", color
+        else:
+            color, texto = color_recomendacion("Alto")
+            return f"Coliformes fecales: {texto}. Niveles superiores a 1 UFC/100mL indican contaminación fecal presente con riesgo sanitario grave.", color
+
+    elif tipo == "Coliformes totales":
+        if valor < 10:
+            color, texto = color_recomendacion("Bajo")
+            return f"Coliformes totales: {texto}. Valores menores a 10 UFC/100mL, aceptables para buena calidad microbiológica.", color
+        elif 10 <= valor <= 40:
+            color, texto = color_recomendacion("Medio")
+            return f"Coliformes totales: {texto}. Entre 10 y 40 UFC/100mL, alerta de contaminación fecal creciente.", color
+        else:
+            color, texto = color_recomendacion("Alto")
+            return f"Coliformes totales: {texto}. Más de 40 UFC/100mL, necesidad de acción urgente para evitar riesgos.", color
+
     elif tipo == "Fosfatos":
         if valor < 0.1:
             color, texto = color_recomendacion("Bajo")
@@ -112,21 +133,10 @@ def recomendar(valor, tipo):
             color, texto = color_recomendacion("Alto")
             return f"Fosfatos (PO4): {texto}. Mayor a 0.3 mg/L, riesgo alto de eutrofización, floración de algas nocivas y deterioro ambiental.", color
 
+    # Aquí puedes agregar más parámetros como Nitratos, Nitritos, etc.
+
 # Clasificar riesgo (sin mostrar riesgo general)
 if st.button("Clasificar Riesgo"):
-    # Crear dataframe con los datos ingresados
-    datos = pd.DataFrame([[pH, conductividad, turbidez, oxigeno, temperatura,
-                           ecoli, coliformes_fecales, coliformes_totales,
-                           no3, no2, nh4, po4]],
-                         columns=["pH", "Conductividad (µS/cm)", "Turbidez (NTU)",
-                                  "Oxígeno disuelto (mg/L)", "Temperatura (°C)",
-                                  "E. coli (UFC/100mL)", "Coliformes fecales (UFC/100mL)",
-                                  "Coliformes totales (UFC/100mL)",
-                                  "NO3 (mg/L)", "NO2 (mg/L)", "NH4 (mg/L)", "PO4 (mg/L)"])
-
-    # Predecir riesgo general (pero ya no lo mostramos)
-    # pred = modelo.predict(datos)[0]  # Esta línea la quitamos, ya no se necesita mostrar el riesgo general.
-
     # Mostrar las recomendaciones personalizadas
     st.subheader("Recomendaciones por Parámetro:")
     
@@ -148,6 +158,12 @@ if st.button("Clasificar Riesgo"):
     recomendacion, color_Ecoli = recomendar(ecoli, "E. coli")
     st.markdown(f"<p style='color:{color_Ecoli};'>{recomendacion}</p>", unsafe_allow_html=True)
 
+    recomendacion, color_Coliformes = recomendar(coliformes_fecales, "Coliformes fecales")
+    st.markdown(f"<p style='color:{color_Coliformes};'>{recomendacion}</p>", unsafe_allow_html=True)
+
+    recomendacion, color_ColiformesTotales = recomendar(coliformes_totales, "Coliformes totales")
+    st.markdown(f"<p style='color:{color_ColiformesTotales};'>{recomendacion}</p>", unsafe_allow_html=True)
+
     recomendacion, color_Fosfatos = recomendar(po4, "Fosfatos")
     st.markdown(f"<p style='color:{color_Fosfatos};'>{recomendacion}</p>", unsafe_allow_html=True)
 
@@ -160,7 +176,8 @@ if st.button("Clasificar Riesgo"):
 
     # Asignar colores a las barras según los valores
     colores = [color_pH, color_Conductividad, color_Turbidez, color_Oxigeno,
-               color_Temperatura, color_Ecoli, color_Fosfatos, "orange", "green", "yellow", "red", "blue"]
+               color_Temperatura, color_Ecoli, color_Coliformes, color_ColiformesTotales, 
+               "green", "yellow", "red", "blue"]
 
     ax.bar(etiquetas, valores, color=colores)
     ax.set_ylabel("Valores ingresados")
